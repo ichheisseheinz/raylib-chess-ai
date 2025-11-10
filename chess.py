@@ -47,116 +47,21 @@ class Chess:
                 )
 
         # Pieces
-        for index, piece in enumerate(reversed(self.board)):
-            # TODO: replace if statements with more robust checking
-            if piece == Piece.WHITE.value | Piece.ROOK.value:
-                draw_texture_pro(
-                    self.image,
-                    self.image_crops[Piece.WHITE.value | Piece.ROOK.value],
-                    Rectangle((index % 8) * self.cell_size, (index // 8) * self.cell_size, self.cell_size, self.cell_size),
-                    Vector2(0, 0),
-                    0,
-                    WHITE
-                    )
-            elif piece == Piece.WHITE.value | Piece.KNIGHT.value:
-                draw_texture_pro(
-                    self.image,
-                    self.image_crops[Piece.WHITE.value | Piece.KNIGHT.value],
-                    Rectangle((index % 8) * self.cell_size, (index // 8) * self.cell_size, self.cell_size, self.cell_size),
-                    Vector2(0, 0),
-                    0,
-                    WHITE
-                    )
-            elif piece == Piece.WHITE.value | Piece.BISHOP.value:
-                draw_texture_pro(
-                    self.image,
-                    self.image_crops[Piece.WHITE.value | Piece.BISHOP.value],
-                    Rectangle((index % 8) * self.cell_size, (index // 8) * self.cell_size, self.cell_size, self.cell_size),
-                    Vector2(0, 0),
-                    0,
-                    WHITE
-                    )
-            elif piece == Piece.WHITE.value | Piece.KING.value:
-                draw_texture_pro(
-                    self.image,
-                    self.image_crops[Piece.WHITE.value | Piece.KING.value],
-                    Rectangle((index % 8) * self.cell_size, (index // 8) * self.cell_size, self.cell_size, self.cell_size),
-                    Vector2(0, 0),
-                    0,
-                    WHITE
-                    )
-            elif piece == Piece.WHITE.value | Piece.QUEEN.value:
-                draw_texture_pro(
-                    self.image,
-                    self.image_crops[Piece.WHITE.value | Piece.QUEEN.value],
-                    Rectangle((index % 8) * self.cell_size, (index // 8) * self.cell_size, self.cell_size, self.cell_size),
-                    Vector2(0, 0),
-                    0,
-                    WHITE
-                    )
-            elif piece == Piece.WHITE.value | Piece.PAWN.value:
-                draw_texture_pro(
-                    self.image,
-                    self.image_crops[Piece.WHITE.value | Piece.PAWN.value],
-                    Rectangle((index % 8) * self.cell_size, (index // 8) * self.cell_size, self.cell_size, self.cell_size),
-                    Vector2(0, 0),
-                    0,
-                    WHITE
-                    )
-            elif piece == Piece.BLACK.value | Piece.ROOK.value:
-                draw_texture_pro(
-                    self.image,
-                    self.image_crops[Piece.BLACK.value | Piece.ROOK.value],
-                    Rectangle((index % 8) * self.cell_size, (index // 8) * self.cell_size, self.cell_size, self.cell_size),
-                    Vector2(0, 0),
-                    0,
-                    WHITE
-                    )
-            elif piece == Piece.BLACK.value | Piece.KNIGHT.value:
-                draw_texture_pro(
-                    self.image,
-                    self.image_crops[Piece.BLACK.value | Piece.KNIGHT.value],
-                    Rectangle((index % 8) * self.cell_size, (index // 8) * self.cell_size, self.cell_size, self.cell_size),
-                    Vector2(0, 0),
-                    0,
-                    WHITE
-                    )
-            elif piece == Piece.BLACK.value | Piece.BISHOP.value:
-                draw_texture_pro(
-                    self.image,
-                    self.image_crops[Piece.BLACK.value | Piece.BISHOP.value],
-                    Rectangle((index % 8) * self.cell_size, (index // 8) * self.cell_size, self.cell_size, self.cell_size),
-                    Vector2(0, 0),
-                    0,
-                    WHITE
-                    )
-            elif piece == Piece.BLACK.value | Piece.KING.value:
-                draw_texture_pro(
-                    self.image,
-                    self.image_crops[Piece.BLACK.value | Piece.KING.value],
-                    Rectangle((index % 8) * self.cell_size, (index // 8) * self.cell_size, self.cell_size, self.cell_size),
-                    Vector2(0, 0),
-                    0,
-                    WHITE
-                    )
-            elif piece == Piece.BLACK.value | Piece.QUEEN.value:
-                draw_texture_pro(
-                    self.image,
-                    self.image_crops[Piece.BLACK.value | Piece.QUEEN.value],
-                    Rectangle((index % 8) * self.cell_size, (index // 8) * self.cell_size, self.cell_size, self.cell_size),
-                    Vector2(0, 0),
-                    0,
-                    WHITE
-                    )
-            elif piece == Piece.BLACK.value | Piece.PAWN.value:
-                draw_texture_pro(
-                    self.image,
-                    self.image_crops[Piece.BLACK.value | Piece.PAWN.value],
-                    Rectangle((index % 8) * self.cell_size, (index // 8) * self.cell_size, self.cell_size, self.cell_size),
-                    Vector2(0, 0),
-                    0,
-                    WHITE
-                    )
+        for index, piece in enumerate(self.board):
+            color = Piece.WHITE.value if piece & 8 == 8 else Piece.BLACK.value
+
+            for i in [Piece.ROOK.value, Piece.KNIGHT.value, Piece.BISHOP.value, Piece.KING.value, Piece.QUEEN.value, Piece.PAWN.value]:
+                if piece & i == i:
+                    type = i
+                    draw_texture_pro(
+                        self.image,
+                        self.image_crops[color | type],
+                        Rectangle((index % 8) * self.cell_size, (index // 8) * self.cell_size, self.cell_size, self.cell_size),
+                        Vector2(0, 0),
+                        0,
+                        WHITE
+                        )
+                    break
     
     def populate_board(self, fen='rnbkqbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBKQBNR w'):
         """
@@ -193,5 +98,7 @@ class Chess:
                     type = piece_map[symbol.lower()]
                     self.board[rank * 8 + file] = color | type
                     file += 1
+        
+        self.board.reverse()
         
         self.white_move = fen_board[1] == 'w'
