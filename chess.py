@@ -7,6 +7,9 @@ class Chess:
     def __init__(self, cell_size: int):
         self.cell_size: int = cell_size
         self.board: list = [0] * 64
+
+        self.index, self.new_index = 0, 0
+        self.moving = False
         self.white_move: bool = True
 
         image = load_image('assets/chesspieces.png')
@@ -45,14 +48,20 @@ class Chess:
                     self.cell_size,
                     BEIGE if light else DARKBROWN
                 )
+        
+        if self.moving:
+            draw_rectangle_lines_ex(
+                Rectangle((self.index % 8) * self.cell_size, (self.index // 8) * self.cell_size, self.cell_size, self.cell_size),
+                5,
+                YELLOW
+            )
 
         # Pieces
         for index, piece in enumerate(self.board):
             color = Piece.WHITE.value if piece & 8 == 8 else Piece.BLACK.value
 
-            for i in [Piece.ROOK.value, Piece.KNIGHT.value, Piece.BISHOP.value, Piece.KING.value, Piece.QUEEN.value, Piece.PAWN.value]:
-                if piece & i == i:
-                    type = i
+            for type in [Piece.ROOK.value, Piece.KNIGHT.value, Piece.BISHOP.value, Piece.KING.value, Piece.QUEEN.value, Piece.PAWN.value]:
+                if piece & type == type:
                     draw_texture_pro(
                         self.image,
                         self.image_crops[color | type],
@@ -102,3 +111,19 @@ class Chess:
         self.board.reverse()
         
         self.white_move = fen_board[1] == 'w'
+    
+    def move(self):
+        if not self.moving:
+            self.index = (get_mouse_y() // self.cell_size) * 8 + (get_mouse_x() // self.cell_size)
+            if self.board[self.index] != Piece.NONE.value:
+                self.moving = True
+        else:
+            self.new_index = (get_mouse_y() // self.cell_size) * 8 + (get_mouse_x() // self.cell_size)
+            self.moving = False
+
+            if self.new_index != self.index and self.board[self.new_index] == Piece.NONE.value:
+                self.board[self.new_index] = self.board[self.index]
+                self.board[self.index] = Piece.NONE.value
+            
+                self.index, self.new_index = 0, 0
+                self.white_move = not self.white_move

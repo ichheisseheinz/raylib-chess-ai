@@ -17,6 +17,8 @@ if __name__ == '__main__':
         begin_drawing()
 
         clear_background(RAYWHITE)
+        if is_mouse_button_pressed(0):
+            chess.move()
         chess.draw_board()
 
         end_drawing()
